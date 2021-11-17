@@ -1,1 +1,72 @@
+1
+Tutorial
+
+Ce chapitre est un tour d’horizon des composants de base de Go. Nous espérons vous fournir assez d’informations et d’exemples pour vous faire démarrer et faire des choses utiles le plus rapidement possible. Les exemples ici, ainsi que pour l’intégralité du livre, sont semblables à des tâches que vous avez déjà faites dans le monde réel. Dans ce chapitre, nous allons essayer de vous donner un aperçu de la diversité des programmes qui peuvent être écrits en Go, depuis la simple gestion de fichiers et un petit peu de graphique, jusqu’à l’utilisation d’internet, côté client et serveur. Nous n'appliquerons certainement pas tout dans le premier chapitre, mais étudier des programmes dans un nouveau langage peut être un moyen efficace de commencer.
+Quand vous apprenez un nouveau langage, il existe une tendance naturelle à écrire le code comme vous l’auriez écrit dans un langage que vous connaissez déjà. Faites attention à essayer d’eviter ce biais lorsque vous apprenez Go. Nous avons essayé d’illustrer et d'expliquer comment écrire du bon code Go, donc utilisez le code ici présent comme un guide lorsque vous écrirez le vôtre.
+
+1.1 Hello, World
+Nous allons commencer avec l’exemple maintenant traditionnel du “Hello World” ou “Bonjour le monde”, qui apparaît au début de The C Programming Language, publié en 1978. C’est l’une des influences les plus directes de Go, et “hello, world” illustre un certain nombre d’idées centrales.
+
+Go est un langage compilé. La chaine d’outils de compilation dechaîne Go convertit un programme source et les choses qui dépendent de lui en des instructions en langages natif d’ordinateur. Ces  outils sont accessibles via une seule commande appelée “go” qui nécessite de nombreuses sous-commandes. La plus facile des ces sous-commandes est “run”, qui compile le code source depuis une ou plusieurs fichiers sources dont la fin des noms finissent par “.go”, fait le lien avec les bibliothèques, puis exécute le fichier exécutable qui en a résulté. (Nous utiliserons $ comme invite de commande tout du long du livre.
+	$ go run helloworld.go
+Sans surprise, cela écrit 
+	Hello,
+Go maîtrise nativement Unicode, il peut donc gérer du texte dans toutes les langues du monde.
+Si le programme est plus qu’une simple commande , il n’en tient qu’à vous de le compiler à lorsque vous le souhaitez et enregistrer le résultat compilé pour une autre fois. Cela est possible avec la commande “go build”.
+	$  go build helloworld.go
+Cela crée un fichier exécutable en binaire appelé helloworld qui peut être exécuté à tout moment sans rien d’autre à mettre en place.
+	$ ./helloworld
+	Hello, 
+Nous avons labellisé chaque exemple important pour vous faire souvenir que vous pouvez obtenir le code depuis le répertoire des codes sources du livre à l’addresse web gopl.io:
+	gopl.io/ch1/helloworld
+//Si vous exécutez go get /ch1/helloworld, il va récupérer le code source et le placer dans le répertoire correspondant. Plus d’informations à propos de ce sujet sont présentes dans les Sections 2.6 et 10.
+Parlons à présent du programme lui-même. Le code Go est organisé en paquets, qui sont similaires à des bibliothèques ou des modules dans d’autres langages. Un paquet corresponds à ou ou plus de fichier en .go dans un seul répertoire qui définissent ce que le paquet fait. Chaque fichier source commence avec une instruction de paquet, ici c’est le paquet main, cela défini à quel paquet le fichier se référera, suivi par une liste d’autres paquets importés et enfin les instructions du programme qui sont contenues dans le fichier.
+La bibliothèque standard de Go a plus de 100 paquets pour les tâches communes comme les entrées et sorties, le sorting, et la manipulation de texte. Par exemple, le paquet fmt contient des fonctions pour l’affichage de valeurs formatés et la lecture de valeurs d’entrées. Println est l’une des plus basiques fonctions de sorties de fmt; il imprime une ou plusieurs valeurs, séparées par des espaces, avec un retour à la ligne à la fin, de sorte que les valeurs apparaissent en une seule ligne de sortie.
+Le paquet main est spécial. Il définit un programme exécutable indépendant, pas une bibliothèque. En plus du paquet main, la fonction main est aussi spéciale. -- c’est là que l’exécution d’un programme commence. Ce que fait main est ce que le programme fait. Bien sur, la fonction main() fera normalement appel à d’autre paquet pour faire la plupart du travail, telle la fonction fmt.Println. 
+Nous devons dire au compilateur quels paquets sont nécessaires au fichier source; c’est le rôle de la déclaration import qui suit la déclaration du paquet.  Le programme “Hello, World” utilise une seule fonction provenant d’un autre paquet, cependant la plupart des programmes importeront davantage de paquets.
+Vous devez impérativement importer les paquets dont vous avez besoin. A programme ne compilera pas s’il manque des import ou si, à l’inverse, il y en a qui ne sont pas nécessaires. Ce strict pré-requis prévient de l’accumulation de références à des paquets nonutilisés au fur et à mesure que le programme évolue.
+La déclaration import doit suivre la déclaration du paquet, package. Après quoi, un programme consiste en déclaration de fonctions, de variables, de constantes et de types (introduit respectivement par les mot-clés func, var, const, et type); la plupart du temps, l’ordre des déclarations n’importe pas. Le précédent programme est un des plus court possible du fait qu’il ne déclare qu’une seule fonction qui à son tour n’appelle qu’une seule autre fonction. Pour gagner de la place, nous ne vous montrerons parfois pas les déclarations package et import quand nous présenterons des exemples, en revanche ils sont dans les fichiers source et doivent être présent dans le code afin qu’il puissent être compilé.
+La déclaration d’une fonction se compose du mot-clé func, du nom de la fonction, une list de paramètre (vide pour le main), une liste de résultat (aussi vide ici), et le corps de la fonction --les instructions qui définissent ce qu’elle fait-- le tout entre accolades {}. Nous regarderons les fonctions de plus près dans le Chapitre 5.
+Go ne requiert pas de point-virgule à la fin d’une instruction ou déclaration, à l’exception où il y en a 2 ou plus sur une seule ligne. En effet, une nouvelle ligne suivant certains caractère sont convertis en point-virgule, donc le placement des retours à la ligne est important dans l’écriture d’un code Go propre. Par exemple, l’accolade ouvrante { de la fonction doit impérativement être sur la même ligne à la fin de la fin de la déclaration func, et non sur sa propre ligne, et dans l’expression x + y, un retour à la ligne est permis après mais pas avant l’opérateur “+”.
+Go prend une position fortement marquée sur le formatage du code. L’outil gofmt réécrit le code dans le format standard, et les sous-commandes fmt de gotool applique gofmt à tous les fichiers dans le paquet spécifié, ou ceux qui se trouvent dans l’actuel répertoire par défaut. Tous les fichiers source Go du livre sont passés par gofmt, et vous devrez prendre l’habitude de faire de même avec votre propre code. Déclarer un format fichier par fiat élimine un grand nombre de débat inutiles sur des points triviaux et, plus important, permet une variété de transformation de code automatisé qui serait infaisable si un formatage arbitraire était permis.
+Beaucoup d'éditeurs de texte peuvent être configurés pour exécuter gofmt à chaque fois que vous sauvegardez un fichier, de sorte que votre code source est constamment proprement formaté. Un outil de la même sorte, goimports, gère en plus l’insertion ou la suppression de déclaration d’importation import comme nécessaire. Cela ne fait pas partie de la version standard mais vous pouvez l’obtenir avec la commande : 
+	  $ go get golang.org/x/tools/cmd/goimports
+Pour la plupart des utilisateurs, la manière usuelle de télécharger et construire vos paquets, exécuter leurs tests, afficher leur documentation, et davantage encore, est avec l’outil go, que nous verrons à la Section 10.7.
+                                                                                                                                                                           
+1.2 Les arguments d’une ligne de commande
+La plupart des programmes travaillent sur des données d’entrées pour produire des données en sortie; c’est plus ou moins la définition de la programmation. Mais comment un programme obtient cette donnée d’entrée sur laquelle opérer? Certains programmes génèrent leurs propres données, mais le plus souvent, les entrées viennent de sources externes: un fichier, une connexion réseau, la sortie d’un autre programme, un utilisateur sur un clavier, les arguments d’une ligne de commande etc. Les quelque prochains exemples aborderont ces sujets en commençant par les arguments d’une ligne de commande.
+
+Le paquet os fournit des fonctions et d’autres valeurs pour traiter avec le système d’exploitation de manière indépendante. Les arguments de ligne de commande sont disponibles pour un programme dans une variable nommée args qui est une part du paquet os; qui a pour nom, partout autre que dans le paquet os, os.Args.
+La variable os.Args est une slice (en français tranche) d’une chaîne de caractère. Les Slices sont une notion fondamentale dans Go et nous en reparlerons beaucoup plus en détails bientôt. Pour le moment, pensez aux slices comme à des tableaux dynamiques où les éléments individuels sont accessibles avec s[i] et une partie continue avec s[m:n]. Le nombre d’éléments est donné par len(s). Comme dans la plupart d'autres langages de programmation, tout index dans Go utilise les intervalles à moitié ouvert qui incluent le premier index mais excluent le dernier car cela simplifie la logique. Par exemple, le slice s[m:n], où 0≤m≤n≤len(s), contient n-m éléments.
+Le premier élément de os.Args, os.Args[0], est le nom de la commande elle-même; les autres éléments sont les arguments qui ont été présentés au programme lorsqu’il a commencé l'exécution. Une expression de slice de la forme s[m:n] donne une slice os.Args[1:len(os.Args)]. Si m ou n sont omis, les valeurs par défaut sont respectivement 0 et len(s), nous pouvons donc abréger la slice désirée à os.Args[1:].
+Nous pouvons trouver une implémentation de la commande echo provenant d'Unix, qui affiche ses arguments de lignes de commande sur une seule ligne. Elle importe 2 paquets, qui sont donnés en liste entre parenthèses plutôt qu’en tant qu’autant de déclarations individuelles. L’autre forme est aussi autorisée mais conventionnellement, la forme sous liste est utilisée *; L'ordre des imports n’importe pas; l’outil gofmt trie les noms des paquets dans l’ordre alphabétique.(Quand il y a plusieurs versions d’un exemple, nous les numéroterons régulièrement pour que vous puissiez être sûr de ce que nous sommes en train de parler. 
+   gopl.io/ch1/echo1
+ // Echo1 prints its command-line arguments.
+	package main 
+
+	import ( 
+		"fmt”
+		 "os" 
+)
+	 func main() {
+		var s, sep string 
+		for i := 1; i < len(os.Args); i++ {
+		s += sep + os.Args[i] 
+		sep = " " 
+		} 
+		fmt.Println(s)
+	 } 
+Les commentaires commencent avec //. Toutes les lignes commençant par // est un commentaire pour les programmeurs et est ignoré par le compilateur. Par convention, nous décrivons chaque paquet dans un commentaire précédant la déclaration dudit paquet; pour un paquet main, ce commentaire se compose d’une ou plusieurs phrases complètes qui décrivent le programme en entier.
+La déclaration var déclare deux variables s et sep, toutes deux de types string. Une variable peut être implémentée dès sa déclaration. Si, elle n’est pas explicitement initialisée, elle l’est implicitement par la valeur nulle de son type. C’est par exemple 0 pour les types numérique et une chaîne de caractère vide pour le type string. Dans notre exemple ci dessus, la déclaration implémente implicitement s et sep par des chaine de caractère vide. Nous parlerons plus amplement des variables et des déclarations dans le chapitre 2.
+Pour ce qui est question des nombres, Go fournit les opérateurs arithmétique habituels. Lorsqu’il est appliqué à des chaînes de caractères, l’opérateur + concatène les valeurs, de sorte que l’expression
+sep + os.Args[i
+représente la concaténation des chaînes sep et op.Args[i]. L’instruction que nous avons utilisé dans le programme,
+s +=  sep + os.Args[i]
+est une instruction d’assignation qui concatène l’ancienne valeur de s avec sep et os.Args[i] et le ré-assigne à s; c’est l’équivalent de 
+	s = s + sep + os.Args[i]
+L’opérateur += est un opérateur d’assignation. Chaque opérateur arithmétique et logique comme + ou * possède son opérateur d'assignation correspondant.
+Le programme echo aurait pu afficher ses sorties dans une boucle donnée par donnée mais cette version construit à la place une chaîne de caractère en ajoutant à plusieurs reprises un nouveau texte à la fin. La chaîne s commence sa vie vide, représentée par la valeur “ “, et chaque passage dans la boucle lui rajoute du texte; après la première itération, un espace est aussi inséré de sorte que lorsque la boucle est finie, il se trouve un espace entre chaque argument. C’est un processus quadratique qui pourrait se trouver être coûteux si le nombre d’arguments est important, mais avec echo, c’est peu probable. Nous allons vous montrer un certain nombre de de versions améliorées de echo dans ce chapitre chapitre ainsi que le prochain qui traiteront réellement de l’inefficacité [d’un programme].
+La variable d’index i est déclaré dans la première partie de la boucle for. Le symbole := fait partie des déclarations rapides de variables, une instruction qui déclare une, ou plus, variable et leur donne un type approprié basé sur les valeurs de l'initialisation; plus d’informations sont disponibles dans le prochain chapitre.
+L'instruction d’implémentation i++ ajoute 1 à i; c’est l’équivalent de i += 1 qui est à son tour l’équivalent de i = i+1. Il existe une décroissance équivalente qui soustrait 1.  Ce sont des instructions, pas des expressions elles le seraient dans la plupart des langages de la famille du C, donc j = i++ est interdit. On peut ajouter que ce ne sont que des suffixes, donc --i est de la même manière interdit.
+ 
 
